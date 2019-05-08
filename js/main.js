@@ -10,9 +10,13 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
 	
 	let portsDict = {};
 	
+	let datesDict = {};
+	
 	dataset['xml']['IDMEF-Message'].forEach(function(d){
 		
 		let date = new Date(d['Alert']['Time']['date'] + ' ' + d['Alert']['Time']['time'])
+		
+		let stamp =  d['Alert']['Time']['time'].split(':')[1] * 60 + parseInt(d['Alert']['Time']['time'].split(':')[2])
 		
 		let source = d['Alert']['Source']['Node']['Address']['address']
 		
@@ -21,6 +25,8 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
 		let sourcePort = d['Alert']['Target']['Service']['sport']
 		
 		let descPort = d['Alert']['Target']['Service']['dport']
+		
+		let service = d['Alert']['Target']['Service']['name']
 		
 		if(linksDict[source] != undefined){
 			
@@ -73,17 +79,34 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
 			portsDict[target]['asDes'][descPort] = 1
 		}
 		
-		let service = d['Alert']['Target']['Service']['name']
+		if(datesDict[stamp] != undefined){
+			
+			datesDict[stamp].push({
+				'source':source,'target':target, 
+			  'targetPort':descPort,'sourcePort':sourcePort, 
+				'service': service})
+		}
+		else{
+			
+			datesDict[stamp] = []
+			
+			datesDict[stamp].push({
+				'source':source,'target':target, 
+			  'targetPort':descPort,'sourcePort':sourcePort, 
+				'service': service})
+		}
+		
 		
 		nodesDict[source] = 1
 		
 		nodesDict[target] = 1
 		
 		statData.push({'time': date,'service':service})
+		
+
 	})
-	
-	console.log(portsDict)
-	
+
+			
 	for (let source in linksDict){
 		
 		for (let target in linksDict[source]){
@@ -95,7 +118,6 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
 			data['links'].push(link)
 		}
 	}
-	
 	
 	createTimeline(statData)
 	
@@ -193,6 +215,14 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
     .selectAll("path")
     .data(links)
     .join("path")
+		.attr('id', function(d){
+			
+			
+				let sourceName = 'N' + d.source.id.replace(/\./g,'+')
+				let targetName = 'N' + d.target.id.replace(/\./g,'+')
+				
+				return sourceName + '-' + targetName
+		})
       .attr("stroke-width", d => Math.sqrt(d.weight))
 	  .attr('fill','none')
 
@@ -202,6 +232,7 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
     .selectAll("node")
     .data(nodes)
     .join("g")
+		.attr("id", d => d.id.replace(/\./g,'+'))
 	.on('click', function(d){
 		
 		createPortsChart(portsDict[d.id], '#ports')
@@ -229,17 +260,12 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
 		return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
 	});
 	
-	//link
-    //    .attr("x1", d => d.source.x)
-    //    .attr("y1", d => d.source.y)
-    //    .attr("x2", d => d.target.x)
-    //    .attr("y2", d => d.target.y);
-
     node
         .attr("transform", d => 'translate(' + d.x + ',' + d.y + ')')
+				.attr("loc", d => d.x + ',' + d.y)
      
   });
 
-  //invalidation.then(() => simulation.stop());
+  createAnimation(datesDict, svg)
 
 })
