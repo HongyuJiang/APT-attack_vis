@@ -1,6 +1,5 @@
-function createTimeline(dataset){
+function createTimeline(dataset, dateDict){
 	
-	console.log(dataset)
 	
 	let bins = {}
 	
@@ -60,21 +59,32 @@ function createTimeline(dataset){
 		.attr('width', width)
 		.attr('height', height)
 	  
-	svg.append("g")
+	let rectGroup = svg.selectAll('rectGroup')
+		.data(bins_list)
+		.enter()
+		.append("g")
+		.on('click', function(d){
+			
+			let date = d.key
+			
+			console.log(date)
+			
+			let data_arr = date.split('M-')
+			
+			let stamp = '' + (data_arr[0] * 60 + parseInt(data_arr[1]))
+			
+			console.log(dateDict[stamp])
+		})
+		
+	rectGroup.append('rect')
 	      .attr("fill", "#FF8C64")
-	    .selectAll("rect")
-	    .data(bins_list)
-	    .join("rect")
 	      .attr("x", d => x(d.key))
 	      .attr("y", d => y(d.stats.counter))
 	      .attr("height", d => y(0) - y(d.stats.counter))
 	      .attr("width", x.bandwidth());
 		  
-	svg.append("g")
+	rectGroup.append('rect')
 	      .attr("fill", "#A3A1A8")
-	    .selectAll("rect")
-	    .data(bins_list)
-	    .join("rect")
 	      .attr("x", d => x(d.key))
 	      .attr("y", d => y(d.stats['udp']))
 	      .attr("height", d => d.stats['udp'] ? y(0) - y(d.stats['udp']) : 0)
