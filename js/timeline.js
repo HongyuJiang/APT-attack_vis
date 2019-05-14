@@ -74,6 +74,72 @@ function createTimeline(dataset, dateDict){
 			let stamp = '' + (data_arr[0] * 60 + parseInt(data_arr[1]))
 			
 			console.log(dateDict[stamp])
+			
+			d3.selectAll('.link')
+				.attr('opacity', 0)
+				
+			let port_service = {}
+				
+			dateDict[stamp].forEach(function(d){
+				
+				let sourceName = 'N' + d.source.replace(/\./g,'+')
+				let targetName = 'N' + d.target.replace(/\./g,'+')
+				
+				let pathName = sourceName + '-' + targetName
+				
+				let pathSelector = '[id="' + pathName + '"]'
+				
+				d3.select(pathSelector).attr('opacity', 1)
+				
+				let name = d.sourcePort + ',' + d.targetPort
+				
+				if (port_service[targetName] != undefined){
+					
+					if(port_service[targetName][name] != undefined){
+						
+						port_service[targetName][name] += 1
+					}
+					else{
+						
+						port_service[targetName][name] = 1
+					}
+				}
+				else{
+					
+					port_service[targetName] = {}
+					port_service[targetName][name] = 1
+					
+				}
+				
+				
+				d3.select('#container').selectAll('.linkLabel').remove()
+				
+				
+				for(let target in port_service){
+					
+					let target_position = d3.select('[id="' + target + '"]').attr('transform')
+					
+					let index = 2
+					
+					for (let link in port_service[target]){
+						
+						index += 1
+						
+						d3.select('#container').select('svg')
+						.append('text')
+						.attr('class','linkLabel')
+						.attr('transform', target_position)
+						.attr('y', index * 18)
+						.attr('x', -50)
+						.text(link.replace(',',' -> '))
+						
+					}
+				}
+				
+		
+			})
+			
+				
 		})
 		
 	rectGroup.append('rect')
