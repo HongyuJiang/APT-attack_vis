@@ -106,14 +106,15 @@ function createNetwork(linksDict, nodesDict, portsDict){
 	const node = svg.append("g")
 	    .attr("stroke", "#fff")
 	    .attr("stroke-width", 1.5)
-	  .selectAll("node")
-	  .data(nodes)
-	  .join("g")
-			.attr("id", d => 'N' + d.id.replace(/\./g,'+'))
-			.on('click', function(d){
+	    .selectAll("node")
+	    .data(nodes)
+	    .join("g")
+	    .attr('class','node')
+	    .attr("id", d => 'N' + d.id.replace(/\./g,'+'))
+	    .on('click', function(d){
 				
-				createPortsChart(portsDict[d.id], '#ports')
-			})
+	        createPortsChart(portsDict[d.id], '#ports')
+	    })
 			
 	node.append('circle')
 	    .attr("r", 10)
