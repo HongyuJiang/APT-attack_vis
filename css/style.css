@@ -74,17 +74,16 @@
     margin-top: 10px;
 }
 
-.tooltip {
-    background: #eee;
-    box-shadow: 0 0 5px #999999;
-    color: #333;
-    font-size: 12px;
-    left: 130px;
-    padding: 10px;
-    position: absolute;
-    text-align: center;
-    top: 95px;
-    z-index: 10;
-    display: block;
-    opacity: 0;
+div.tooltip {
+  color: white;
+  position: absolute;
+  text-align: center;
+  width: 120px;
+  height: 28px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: rgba(0,0,0,.8);
+  border: 2px solid black;
+  pointer-events: none;
+  top:-100px;
 }

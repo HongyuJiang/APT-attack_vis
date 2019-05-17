@@ -108,7 +108,7 @@ d3.json("./data/mid-level-phase-3.json").then(function(dataset){
 	
 	createNetwork(linksDict, nodesDict, portsDict)
 	
-	createTimeline(statData, datesDict)
+	createGanttChart(nodesDict, datesDict)
 
 
   //	createAnimation(datesDict, svg)

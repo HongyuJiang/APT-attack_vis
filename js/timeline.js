@@ -1,5 +1,6 @@
 function createTimeline(dataset, dateDict){
 	
+	console.log(dataset, dateDict)
 	
 	let bins = {}
 	
